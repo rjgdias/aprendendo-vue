@@ -16,7 +16,8 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { useStore } from '@/store';
-import { ALTERA_PROJETO, ADICIONA_PROJETO } from '@/store/tipo-mutacoes';
+import { ALTERA_PROJETO, ADICIONA_PROJETO, NOTIFICAR } from '@/store/tipo-mutacoes';
+import { TipoNotificacao } from '@/interfaces/INotificacao';
 export default defineComponent({
     // eslint-disable-next-line vue/multi-word-component-names
     name: 'Formulario',
@@ -46,9 +47,13 @@ export default defineComponent({
                 })
             }else{
                 this.store.commit(ADICIONA_PROJETO, this.nomeDoProjeto)
-                
             }
             this.nomeDoProjeto = '';
+            this.store.commit(NOTIFICAR,{
+                titulo: 'Novo projeto foi salvo',
+                texto: 'Pronto, seu projeto está disponível',
+                tipo: TipoNotificacao.SUCESSO
+            })
             this.$router.push('/projetos')
         }
     },
