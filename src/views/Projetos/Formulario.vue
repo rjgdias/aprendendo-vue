@@ -16,18 +16,20 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 import { useStore } from '@/store';
-import { ALTERA_PROJETO, ADICIONA_PROJETO, NOTIFICAR } from '@/store/tipo-mutacoes';
+import { ALTERA_PROJETO, ADICIONA_PROJETO } from '@/store/tipo-mutacoes';
 import { TipoNotificacao } from '@/interfaces/INotificacao';
+import useNotificador from '@/hooks/notificador'
+
 export default defineComponent({
     // eslint-disable-next-line vue/multi-word-component-names
     name: 'Formulario',
     props: {
-        id:{
+        id: {
             type: String
         }
     },
-    mounted () {
-        if(this.id){
+    mounted() {
+        if (this.id) {
             const projeto = this.store.state.projetos.find(proj => proj.id == this.id)
             this.nomeDoProjeto = projeto?.nome || ''
         }
@@ -39,28 +41,26 @@ export default defineComponent({
     },
     methods: {
         salvar() {
-            if(this.id){
+            if (this.id) {
                 //edicao
                 this.store.commit(ALTERA_PROJETO, {
                     id: this.id,
                     nome: this.nomeDoProjeto,
                 })
-            }else{
+            } else {
                 this.store.commit(ADICIONA_PROJETO, this.nomeDoProjeto)
             }
             this.nomeDoProjeto = '';
-            this.store.commit(NOTIFICAR,{
-                titulo: 'Novo projeto foi salvo',
-                texto: 'Pronto, seu projeto está disponível',
-                tipo: TipoNotificacao.SUCESSO
-            })
+            this.notificar(TipoNotificacao.SUCESSO, 'Excelente', 'O projeto foi cadastrado com sucesso')
             this.$router.push('/projetos')
-        }
+        },
     },
     setup() {
         const store = useStore()
+        const { notificar } = useNotificador()
         return {
-            store
+            store,
+            notificar
         }
     }
 });
